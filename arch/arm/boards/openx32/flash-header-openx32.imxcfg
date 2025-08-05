@@ -5,20 +5,139 @@
 #
 soc imx25
 loadaddr 0x80000000
-ivtofs 0x400
-wm 32 0xb8001010 0x00000002
-wm 32 0xb8001004 0x00095728
-wm 32 0xb8001000 0x92116480
-wm 32 0x80000400 0x92116480
-wm 32 0xb8001000 0xa2116480
-wm 32 0xb8001000 0xb2116480
-wm 8 0x80000033 0x80
-wm 32 0xb8001000 0x82116480
 
-wm 32 0xb800100c 0x00095728
-wm 32 0xb8001008 0x92116480
-wm 32 0x80000400 0x92116480
-wm 32 0xb8001008 0xa2116480
-wm 32 0xb8001008 0xb2116480
-wm 8 0x90000033 0x80
-wm 32 0xb8001008 0x82116480
+# start of DCD
+ivtofs 0x400
+
+
+# Freescale/NXP i.MX253 Memory-initialization script for pyATK
+# v0.1 18.05.2025
+#
+# This Meminit-script is based on mDDR-init in NXP AN4017 Rev0, 03/2010
+#
+# in i.MX25 Doku AN4017 the HYB18M512160AF is used as mDDR
+# HYB18M512160AF is a type of LPDDR regarding to https://www.absunshine.com/en/parts/HYB18M512160AF-7-50-QIMONDA-3236083
+
+# general initialization
+# ==============================
+# enable mDDR mode (MDDR_EN = 1) in SDRAM control registers (0xB8001xxx) -> Offset 0x010 -> ESDMISC
+wm 32 0xB8001010 0x00000004
+# ESDRAMC timings (0b011110101110101100111010) in SDRAM control register (0xB8001xxx) -> Offset 0x004 -> ESDCFG0
+wm 32 0xB8001004 0x007AEB3A
+# DDR initialization
+# enable CS0 precharge command (0b10010010000100000000000000000000) in SDRAM control register (0xB8001xxx) -> Offset 0x000 -> ESDCTL0
+wm 32 0xB8001000 0x92216082
+
+# precharge all dummy write only address matter (0x80000000 is RAM)
+wm 32 0x80000400 0x12344321
+
+# enable CS0 Auto-Refresh command (0b10100010000100000000000000000000) in SDRAM control register (0xB8001xxx) -> Offset 0x000 -> ESDCTL0
+wm 32 0xB8001000 0xA2216082
+
+# two refresh command dummy write only address matter (0x80000000 is RAM)
+wm 32 0x80000000 0x12344321
+wm 32 0x80000000 0x12344321
+
+# enable CS0 Load Mode Register command (0b10110010000100000000000000000000) in SDRAM control register (0xB8001xxx) -> Offset 0x000 -> ESDCTL0
+wm 32 0xB8001000 0xB2216082
+# MODE register - CAS3, BL8
+
+# dummy write only address matter (0x80000000 is RAM)
+wm 8 0x80000033 0xda
+
+# Extended MODE register
+# dummy write only address matter (0x80000000 is RAM)
+wm 8 0x81000000 0xff
+
+# Configure EDSRAMC for normal mode in SDRAM control register (0xB8001xxx) -> Offset 0x000 -> ESDCTL0
+wm 32 0xB8001000 0x82216082
+
+# dummy write to set DQSlow (needed in MX31, not sure about MX25)
+#0x80000000 0x00000000 32
+
+# configure AIPS1 (base Address 0x43F0_xxxx)
+# ==============================
+# AIPS1_OPACR0_7
+wm 32 0x43F00040 0x00000000
+# AIPS1_OPACR8_15
+wm 32 0x43F00044 0x00000000
+# AIPS1_OPACR16_23
+wm 32 0x43F00048 0x00000000
+# AIPS1_OPACR24_31
+wm 32 0x43F0004C 0x00000000
+# AIPS1_OPACR32_33
+wm 32 0x43F00050 0x00000000
+# AIPS1_MPROT0_7
+wm 32 0x43F00000 0x77777777
+# AIPS1_MPROT8_15
+wm 32 0x43F00004 0x77777777
+
+# configure AIPS2  (base Address 0x53F0_xxxx) - keep for now, may need to modify based on MX25
+# ==============================
+# AIPS2_OPACR0_7
+wm 32 0x53F00040 0x00000000
+# AIPS2_OPACR8_15
+wm 32 0x53F00044 0x00000000
+# AIPS2_OPACR16_23
+wm 32 0x53F00048 0x00000000
+# AIPS2_OPACR24_31
+wm 32 0x53F0004C 0x00000000
+# AIPS2_OPACR32_33
+wm 32 0x53F00050 0x00000000
+# AIPS2_MPROT0_7
+wm 32 0x53F00000 0x77777777
+# AIPS2_MPROT8_15
+wm 32 0x53F00004 0x77777777
+
+# configure CPLD on CS5
+# ==============================
+# CS5_CSCRU in WEIM control register (0xB8002xxx) -> offset 0x050 -> CSCR5U (Chip Select 5 Upper Control Register)
+wm 32 0xB8002050 0x0000D843
+# CS5_CSCRL in WEIM control register (0xB8002xxx) -> offset 0x054 -> CSCR5L (Chip Select 5 Lower Control Register)
+wm 32 0xB8002054 0x22252521
+# CS5_CSCRA in WEIM control register (0xB8002xxx) -> offset 0x058 -> CSCR5A (Chip Select 5 Additional Control Register)
+wm 32 0xB8002058 0x22220A00
+
+# init_ccm - base freq  400, configuring post dividers
+# ==============================
+# ARM clk  399, AHB clk  133 in CCRM register (0x53F8xxxx) -> offset 0x0008 -> CCTL (CLock Control Register)
+wm 32 0x53F80008 0x20034000
+
+# CLKO options in CCRM register (0x53F8xxxx) -> offset 0x0064 -> MCR (Miscellaneous Control Register)
+# uncomment one on 3DS, CLKO available on R281
+# ==============================
+# AHB clk, div-by-4
+#0x53f80064 0x43300000 32
+# ARM clk, div-by-8
+#0x53f80064 0x47200000 32
+# CLK32K straight
+#0x53f80064 0x40000000 32
+
+
+
+
+# set GPIO 4,24 = UART1_RTS (MCU_BUSY)
+# set mux to ALT5 in MUX_CTL (0x178) in IOMUXC (0x43FACxxx)
+wm 32 0x43FAC178 0x00000065
+# disable pullups in PAD_CTL (0x370) in IOMUXC (0x43FACxxx)
+wm 32 0x43FAC370 0x00000000
+# set direction to output of Pin 24 (0x01000000) in GDIR (0x004) in GPIO-4 (0x53F9Cxxx)
+wm 32 0x53F9C004 0x01000000
+# set output to HIGH of Pin 24 (0x01000000) in DR (0x000) in GPIO-4 (0x53F9Cxxx)
+wm 32 0x53F9C000 0x01000000
+
+
+
+# ALT0 = PWM1 / ALT5 = GPIO1 (Pin26)
+# set GPIO 1,26 = PWM (LAMP_PWM)
+# set mux of IOMUXC_SW_MUX_CTL_PAD_PWM to ALT5 in MUX_CTL (0x11C) in IOMUXC (0x43FACxxx)
+wm 32 0x43FAC11C 0x00000005
+# disable pullups in PAD_CTL (IOMUXC_SW_PAD_CTL_PAD_PWM) (0x314) in IOMUXC (0x43FACxxx)
+wm 32 0x43FAC314 0x00000000
+# set direction to output of Pin 26 (0x4000000) in GDIR (0x004) in GPIO-1 (0x53FCCxxx)
+wm 32 0x53FCC004 0x04000000
+# set output to LOW of Pin 26 (0x01000000) in DR (0x000) in GPIO-1 (0x53FCCxxx)
+wm 32 0x53FCC000 0x00000000
+
+# set LPCR-Register
+wm 32 0x53FBC018 0xFC228080
