@@ -180,6 +180,7 @@ lwl-$(CONFIG_MACH_TQMA6UL) += imx6ul-tqma6ul2-mba6ulx.dtb.o \
 			      imx6ull-tqma6ull2-mba6ulx.dtb.o \
 			      imx6ull-tqma6ull2l-mba6ulx.dtb.o
 lwl-$(CONFIG_MACH_TQMA6X) += imx6dl-mba6x.dtb.o imx6q-mba6x.dtb.o
+lwl-$(CONFIG_MACH_OPENX32) += imx25-openx32.dtb.o
 lwl-$(CONFIG_MACH_TX25) += imx25-karo-tx25.dtb.o
 lwl-$(CONFIG_MACH_TX6X) += imx6dl-tx6u.dtb.o
 lwl-$(CONFIG_MACH_TX6X) += imx6q-tx6q.dtb.o

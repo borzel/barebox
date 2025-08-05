@@ -64,6 +64,15 @@ FILE_barebox-synertronix-scb9328.img = start_scb9328.pblb
 image-$(CONFIG_MACH_SCB9328) += barebox-synertronix-scb9328.img
 
 # ----------------------- i.MX25 based boards ---------------------------
+pblb-$(CONFIG_MACH_OPENX32) += start_imx25_openx32
+FILE_barebox-openx32.img = start_imx25_openx32.pblb
+image-$(CONFIG_MACH_OPENX32) += barebox-openx32.img
+
+pblb-$(CONFIG_MACH_OPENX32) += start_imx25_openx32
+CFG_start_imx25_openx32.pblb.imximg = $(board)/openx32/flash-header-openx32.imxcfg
+FILE_barebox-openx32-internal.img = start_imx25_openx32.pblb.imximg
+image-$(CONFIG_MACH_OPENX32) += barebox-openx32-internal.img
+
 pblb-$(CONFIG_MACH_TX25) += start_imx25_karo_tx25
 FILE_barebox-karo-tx25.img = start_imx25_karo_tx25.pblb
 image-$(CONFIG_MACH_TX25) += barebox-karo-tx25.img

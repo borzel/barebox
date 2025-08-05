@@ -51,6 +51,7 @@ extern unsigned int __machine_arch_type;
 #define MACH_TYPE_TNY_A9263            2140
 #define MACH_TYPE_AT91SAM9G10EK        2159
 #define MACH_TYPE_TX25                 2177
+#define MACH_TYPE_OPENX32	       2178
 #define MACH_TYPE_MX23EVK              2629
 #define MACH_TYPE_PM9G45               2672
 #define MACH_TYPE_OMAP4_PANDA          2791
@@ -376,6 +377,20 @@ extern unsigned int __machine_arch_type;
 #else
 # define machine_is_tx25()	(0)
 #endif
+
+#ifdef CONFIG_MACH_OPENX32
+# ifdef machine_arch_type
+#  undef machine_arch_type
+#  define machine_arch_type     __machine_arch_type
+# else
+#  define machine_arch_type     MACH_TYPE_OPENX32
+# endif
+# define machine_is_openx32()      (machine_arch_type == MACH_TYPE_OPENX32)
+#else
+# define machine_is_openx32()      (0)
+#endif
+
+
 
 #ifdef CONFIG_MACH_MX23EVK
 # ifdef machine_arch_type

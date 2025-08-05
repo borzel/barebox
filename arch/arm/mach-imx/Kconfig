@@ -223,6 +223,12 @@ config MACH_SCB9328
 
 comment "i.MX25 boards"
 
+config MACH_OPENX32
+        bool "Behringer X32 - OpenX32"
+        select ARCH_IMX25
+        help
+          Say Y here if you are using the Behringer X32 board
+
 config MACH_TX25
 	bool "Ka-Ro TX25"
 	select ARCH_IMX25
