@@ -58,35 +58,6 @@ static void mx25pdk_uart_init(void)
 
 static int openx32_init(void)
 {
-	// configure peripheral enables for CGCR0
-	// configure peripheral enables for CGCR1
-	// configure peripheral enables for CGCR2
-	// Set Peripheral Clock Divider Registers (CCM_PDR0...CCM_PDR3)
-	asm volatile(
-	"ldr r0, =0x53F8000C \n\t"
-	"ldr r1, =0x1FFFFFFF \n\t"
-	"str r1, [r0] \n\t"
-	"ldr r0, =0x53F80010 \n\t"
-	"ldr r1, =0xFFFFFFFF \n\t"
-	"str r1, [r0] \n\t"
-	"ldr r0, =0x53F80014 \n\t"
-	"ldr r1, =0x000FDFFF \n\t"
-	"str r1, [r0] \n\t"
-
-	"ldr r0, =0x53F80018 \n\t"
-	"ldr r1, =0x23C83403 \n\t"
-	"str r1, [r0] \n\t"
-	"ldr r0, =0x53F8001C \n\t"
-	"ldr r1, =0x03030303 \n\t"
-	"str r1, [r0] \n\t"
-	"ldr r0, =0x53F80020 \n\t"
-	"ldr r1, =0x01010103 \n\t"
-	"str r1, [r0] \n\t"
-	"ldr r0, =0x53F80024 \n\t"
-	"ldr r1, =0x01010101 \n\t"
-	"str r1, [r0]"
-	);
-
 	// set GPIOs within IOMUXC
 	static const iomux_v3_cfg_t gpio_pads[] = {
 		NEW_PAD_CTRL(MX25_PAD_CONTRAST__PWM4_PWMO, 0),
@@ -98,47 +69,46 @@ static int openx32_init(void)
 	mxc_iomux_v3_setup_multiple_pads(gpio_pads, ARRAY_SIZE(gpio_pads));
 
 	// enable display-backlight
-        // configure Prescaler but disable PWM (PWM_PWMC)
-        asm volatile(
-        "ldr r0, =0x53FC8000\n\t"
-        "ldr r1, =0x000100A0\n\t"
-        "str r1, [r0]"
-        );
-        // set periode (PWM_PWMPR) and dutycycle (PWM_PWMSAR)
-        asm volatile(
-        "ldr r0, =0x53FC8010\n\t"
-        "ldr r1, =0x00000190\n\t"
-        "str r1, [r0]\n\t"
-        "ldr r0, =0x53FC800C\n\t"
-        "ldr r1, =0x000000C8\n\t"
-        "str r1, [r0]"
-        );
-        // configure Prescaler and enable PWM (PWM_PWMC)
-        asm volatile(
-        "ldr r0, =0x53FC8000\n\t"
-        "ldr r1, =0x000100A1\n\t"
-        "str r1, [r0]"
-        );
+	// configure Prescaler but disable PWM (PWM_PWMC)
+	asm volatile(
+	"ldr r0, =0x53FC8000\n\t"
+	"ldr r1, =0x000100A0\n\t"
+	"str r1, [r0]"
+	);
+	// set periode (PWM_PWMPR) and dutycycle (PWM_PWMSAR)
+	asm volatile(
+	"ldr r0, =0x53FC8010\n\t"
+	"ldr r1, =0x00000190\n\t"
+	"str r1, [r0]\n\t"
+	"ldr r0, =0x53FC800C\n\t"
+	"ldr r1, =0x000000C8\n\t"
+	"str r1, [r0]"
+	);
+	// configure Prescaler and enable PWM (PWM_PWMC)
+	asm volatile(
+	"ldr r0, =0x53FC8000\n\t"
+	"ldr r1, =0x000100A1\n\t"
+	"str r1, [r0]"
+	);
 
 	// enable LAMP (asserted when high)
 	gpio_request(LAMP_PWM, "LAMP_PWM");
 	gpio_direction_output(LAMP_PWM, 1);
-	gpio_set_value(LAMP_PWM, 1);
-	mdelay(200);
 	gpio_set_value(LAMP_PWM, 0);
-	mdelay(200);
-	gpio_set_value(LAMP_PWM, 1);
-	mdelay(200);
-	gpio_set_value(LAMP_PWM, 0);
-	mdelay(200);
-	gpio_set_value(LAMP_PWM, 1);
-	mdelay(200);
-	gpio_set_value(LAMP_PWM, 0);
-	mdelay(200);
-	gpio_set_value(LAMP_PWM, 1);
-	mdelay(200);
-	gpio_set_value(LAMP_PWM, 0);
-	mdelay(200);
+	
+	// mdelay(200);
+	// gpio_set_value(LAMP_PWM, 1);
+	// mdelay(200);
+	// gpio_set_value(LAMP_PWM, 0);
+	// mdelay(200);
+	// gpio_set_value(LAMP_PWM, 1);
+	// mdelay(200);
+	// gpio_set_value(LAMP_PWM, 0);
+	// mdelay(200);
+	// gpio_set_value(LAMP_PWM, 1);
+	// mdelay(200);
+	// gpio_set_value(LAMP_PWM, 0);
+	// mdelay(200);
 
 	// enable USB_POWER (asserted when high)
 	gpio_request(USB_POWER, "USB_POWER");
@@ -157,10 +127,6 @@ static int openx32_init(void)
 
 	barebox_set_hostname("openx32");
 	armlinux_set_architecture(MACH_TYPE_OPENX32);
-	
-	//mx25pdk_uart_init();
-
-
 
 	return 0;
 }
