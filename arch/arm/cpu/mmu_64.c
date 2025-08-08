@@ -10,7 +10,6 @@
 #include <init.h>
 #include <mmu.h>
 #include <errno.h>
-#include <range.h>
 #include <zero_page.h>
 #include <linux/sizes.h>
 #include <asm/memory.h>
@@ -146,6 +145,8 @@ static void create_sections(uint64_t virt, uint64_t phys, uint64_t size,
 	attr &= ~PTE_TYPE_MASK;
 
 	size = PAGE_ALIGN(size);
+	if (!size)
+		return;
 
 	while (size) {
 		table = ttb;
@@ -358,19 +359,20 @@ static void create_guard_page(void)
 	pr_debug("Created guard page\n");
 }
 
+void setup_trap_pages(void)
+{
+	/* Vectors are already registered by aarch64_init_vectors */
+	/* Make zero page faulting to catch NULL pointer derefs */
+	zero_page_faulting();
+	create_guard_page();
+}
+
 /*
  * Prepare MMU for usage enable it.
  */
 void __mmu_init(bool mmu_on)
 {
 	uint64_t *ttb = get_ttb();
-	struct memory_bank *bank;
-	unsigned long text_start = (unsigned long)&_stext;
-	unsigned long code_start = text_start;
-	unsigned long code_size = (unsigned long)&__start_rodata - (unsigned long)&_stext;
-	unsigned long text_size = (unsigned long)&_etext - text_start;
-	unsigned long rodata_start = (unsigned long)&__start_rodata;
-	unsigned long rodata_size = (unsigned long)&__end_rodata - rodata_start;
 
 	// TODO: remap writable only while remapping?
 	// TODO: What memtype for ttb when barebox is EFI loader?
@@ -384,35 +386,6 @@ void __mmu_init(bool mmu_on)
 		 *   the ttb will get corrupted.
 		 */
 		pr_crit("Can't request SDRAM region for ttb at %p\n", ttb);
-
-	for_each_memory_bank(bank) {
-		struct resource *rsv;
-		resource_size_t pos;
-
-		pos = bank->start;
-
-		/* Skip reserved regions */
-		for_each_reserved_region(bank, rsv) {
-			remap_range((void *)pos, rsv->start - pos, MAP_CACHED);
-			pos = rsv->end + 1;
-		}
-
-		if (region_overlap_size(pos, bank->start + bank->size - pos,
-		    text_start, text_size)) {
-			remap_range((void *)pos, text_start - pos, MAP_CACHED);
-			/* skip barebox segments here, will be mapped below */
-			pos = text_start + text_size;
-		}
-
-		remap_range((void *)pos, bank->start + bank->size - pos, MAP_CACHED);
-	}
-
-	remap_range((void *)code_start, code_size, MAP_CODE);
-	remap_range((void *)rodata_start, rodata_size, ARCH_MAP_CACHED_RO);
-
-	/* Make zero page faulting to catch NULL pointer derefs */
-	zero_page_faulting();
-	create_guard_page();
 }
 
 void mmu_disable(void)
@@ -497,12 +470,12 @@ void mmu_early_enable(unsigned long membase, unsigned long memsize, unsigned lon
 		barebox_size = optee_membase - barebox_start;
 
 		early_remap_range(optee_membase - barebox_size, barebox_size,
-			     get_pte_attrs(ARCH_MAP_CACHED_RWX), true);
+			     ARCH_MAP_CACHED_RWX, true);
 	} else {
 		barebox_size = membase + memsize - barebox_start;
 
 		early_remap_range(membase + memsize - barebox_size, barebox_size,
-			     get_pte_attrs(ARCH_MAP_CACHED_RWX), true);
+			     ARCH_MAP_CACHED_RWX, true);
 	}
 
 	early_remap_range(optee_membase, OPTEE_SIZE, MAP_FAULT, false);
