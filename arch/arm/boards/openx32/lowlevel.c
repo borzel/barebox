@@ -14,6 +14,9 @@ ENTRY_FUNCTION_WITHSTACK(start_imx25_openx32, MX25_IRAM_BASE_ADDR + MX25_IRAM_SI
     relocate_to_current_adr();
     setup_c();
 
+	// disable watchdog
+	writel(0, 0x53FDC008);
+
 	// LAMP ON
 	writel(0x04000000, 0x53FCC000);
 
