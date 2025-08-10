@@ -14,5 +14,5 @@ ENTRY_FUNCTION_WITHSTACK(start_imx25_openx32, MX25_IRAM_BASE_ADDR + MX25_IRAM_SI
     relocate_to_current_adr();
     setup_c();
 
-	barebox_arm_entry(0x80000000, SZ_32M, __dtb_imx25_openx32_start);
+	barebox_arm_entry(0x80000000, SZ_64M, __dtb_imx25_openx32_start);
 }
