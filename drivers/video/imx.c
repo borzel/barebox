@@ -581,8 +581,6 @@ static int imxfb_probe(struct device *dev)
 	info->bits_per_pixel = pdata->bpp;
 	info->fbops = &imxfb_ops;
 
-	dev_info(dev, "i.MX Framebuffer driver\n");
-
 
 	ret = imxfb_allocate_fbbuffer(dev, info, pdata->framebuffer);
 	if (ret < 0)
@@ -599,6 +597,11 @@ static int imxfb_probe(struct device *dev)
 #ifdef CONFIG_IMXFB_DRIVER_VIDEO_IMX_OVERLAY
 	imxfb_register_overlay(fbi, pdata->framebuffer_ovl);
 #endif
+
+	// (Alexander Schulz, OpenX32, 11.08.2025) Workaround to get display enabled
+	imxfb_disable_controller(info);
+	imxfb_enable_controller(info);
+
 	return 0;
 }
 
