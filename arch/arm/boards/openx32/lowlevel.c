@@ -14,14 +14,5 @@ ENTRY_FUNCTION_WITHSTACK(start_imx25_openx32, MX25_IRAM_BASE_ADDR + MX25_IRAM_SI
     relocate_to_current_adr();
     setup_c();
 
-	// disable watchdog
-	//writel(0x00000000, 0x53FDC008);
-
-	// LAMP ON
-	writel(0x04000000, 0x53FCC000);
-
-	// LAMP OFF
-	//writel(0x00000000, 0x53FCC000);
-
-	barebox_arm_entry(0x80000000, SZ_256M, __dtb_imx25_openx32_start);
+	barebox_arm_entry(0x80000000, SZ_32M, __dtb_imx25_openx32_start);
 }

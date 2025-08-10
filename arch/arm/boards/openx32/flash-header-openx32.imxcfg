@@ -52,9 +52,6 @@ wm 8 0x81000000 0xff
 # Configure EDSRAMC for normal mode in SDRAM control register (0xB8001xxx) -> Offset 0x000 -> ESDCTL0
 wm 32 0xB8001000 0x82216082
 
-# dummy write to set DQSlow (needed in MX31, not sure about MX25)
-#0x80000000 0x00000000 32
-
 # configure CPLD on CS5
 # ==============================
 # CS5_CSCRU in WEIM control register (0xB8002xxx) -> offset 0x050 -> CSCR5U (Chip Select 5 Upper Control Register)
@@ -68,17 +65,3 @@ wm 32 0xB8002058 0x22220A00
 # ==============================
 # ARM clk  399, AHB clk  133 in CCRM register (0x53F8xxxx) -> offset 0x0008 -> CCTL (CLock Control Register)
 wm 32 0x53F80008 0x20034000
-
-# CLKO options in CCRM register (0x53F8xxxx) -> offset 0x0064 -> MCR (Miscellaneous Control Register)
-# uncomment one on 3DS, CLKO available on R281
-# ==============================
-# AHB clk, div-by-4
-#0x53f80064 0x43300000 32
-# ARM clk, div-by-8
-#0x53f80064 0x47200000 32
-# CLK32K straight
-#0x53f80064 0x40000000 32
-
-
-
-
