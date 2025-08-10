@@ -99,14 +99,6 @@ static int openx32_init(void)
 	};
 	mxc_iomux_v3_setup_multiple_pads(gpio_pads, ARRAY_SIZE(gpio_pads));
 
-
-	// // disable watchdog
-	// asm volatile(
-	// "ldr r0, =0x53FDC002\n\t"
-	// "ldr r1, =0x00000003\n\t"
-	// "str r1, [r0]"
-	// );
-
 	// enable display-backlight
 	// configure Prescaler but disable PWM (PWM_PWMC)
 	asm volatile(
@@ -134,20 +126,6 @@ static int openx32_init(void)
 	gpio_request(LAMP_PWM, "LAMP_PWM");
 	gpio_direction_output(LAMP_PWM, 1);
 	gpio_set_value(LAMP_PWM, 0);
-	
-	// mdelay(200);
-	// gpio_set_value(LAMP_PWM, 1);
-	// mdelay(200);
-	// gpio_set_value(LAMP_PWM, 0);
-	// mdelay(200);
-	// gpio_set_value(LAMP_PWM, 1);
-	// mdelay(200);
-	// gpio_set_value(LAMP_PWM, 0);
-	// mdelay(200);
-	// gpio_set_value(LAMP_PWM, 1);
-	// mdelay(200);
-	// gpio_set_value(LAMP_PWM, 0);
-	// mdelay(200);
 
 	// enable USB_POWER (asserted when high)
 	gpio_request(USB_POWER, "USB_POWER");
