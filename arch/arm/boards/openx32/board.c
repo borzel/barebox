@@ -136,12 +136,12 @@ static struct fb_videomode openx32_fb_mode = {
 	.xres		= 800,
 	.yres		= 480,
 	
-	.right_margin	= 210, // hfront porch
+	.right_margin	= 208, // hfront porch
 	.left_margin	= 47,  // hback porch / blanking
 	.hsync_len	= 1,
 	
 	.upper_margin	= 24,  // vback porch
-	.lower_margin	= 20,  // vfront porch
+	.lower_margin	= 130,  // vfront porch
 	.vsync_len	= 1,
 };
 
@@ -175,7 +175,7 @@ static int openx32_init_fb(void)
 	// ###############################################################
 
 	openx32_fb_enable(0);
-	add_generic_device("imxfb",	-1,	NULL, (resource_size_t)MX25_LCDC_BASE_ADDR, 0x2000, IORESOURCE_MEM, &openx32_fb_data);
+	add_generic_device("imxfb",	-1,	NULL, (resource_size_t)MX25_LCDC_BASE_ADDR, 0x1000, IORESOURCE_MEM, &openx32_fb_data);
 
 	return 0;
 }
