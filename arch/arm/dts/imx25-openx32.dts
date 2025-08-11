@@ -200,7 +200,7 @@
 
 		pinctrl_lcd: lcdgrp {
 			fsl,pins = <
-				MX25_PAD_LD0__LD0		0xe0
+				MX25_PAD_LD0__LD0		0xe0   // 100KOhm Pullup
 				MX25_PAD_LD1__LD1		0xe0
 				MX25_PAD_LD2__LD2		0xe0
 				MX25_PAD_LD3__LD3		0xe0
@@ -223,7 +223,6 @@
 				MX25_PAD_LSCLK__LSCLK		0xe0
 				MX25_PAD_OE_ACD__OE_ACD		0xe0
 				MX25_PAD_CONTRAST__CONTRAST	0xe0
-				//MX25_PAD_CONTRAST__PWM4_PWMO
 			>;
 		};
 
