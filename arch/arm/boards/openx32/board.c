@@ -161,6 +161,12 @@ static int openx32_init_fb(void)
 		return 0;
 	}
 
+	// set GPIOs within IOMUXC
+	static const iomux_v3_cfg_t gpio_pads[] = {
+		NEW_PAD_CTRL(MX25_PAD_CONTRAST__PWM4_PWMO, 0),
+	};
+	mxc_iomux_v3_setup_multiple_pads(gpio_pads, ARRAY_SIZE(gpio_pads));
+
 	// ###############################################################
 	// enable display-backlight
 		
@@ -175,7 +181,7 @@ static int openx32_init_fb(void)
 	// ###############################################################
 
 	openx32_fb_enable(0);
-	add_generic_device("imxfb",	-1,	NULL, (resource_size_t)MX25_LCDC_BASE_ADDR, 0x1000, IORESOURCE_MEM, &openx32_fb_data);
+	add_generic_device("imxfb",	-1,	NULL, (resource_size_t)MX25_LCDC_BASE_ADDR, 0x2000, IORESOURCE_MEM, &openx32_fb_data);
 
 	return 0;
 }
