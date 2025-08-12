@@ -174,7 +174,8 @@ static struct imx_fb_platform_data openx32_fb_data = {
 	.num_modes	= 1,
 	//.lscr1		= 0x00120300,
 	.dmacr		= 0x00020010,
-	.pcr		= 0xFC228080,
+	// results in .pcr = 0xFC228082, 
+	.pcr		= PCR_TFT | PCR_COLOR | PCR_PBSIZ_8 | PCR_BPIX_18 | PCR_CLKPOL | PCR_END_BYTE_SWAP | PCR_ACD_SEL | PCR_SCLK_SEL | PCR_PCD(2),
 	.bpp		= 32,	
 	.enable		= openx32_fb_enable,
 };
