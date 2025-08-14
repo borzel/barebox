@@ -597,11 +597,6 @@ static int imxfb_probe(struct device *dev)
 #ifdef CONFIG_IMXFB_DRIVER_VIDEO_IMX_OVERLAY
 	imxfb_register_overlay(fbi, pdata->framebuffer_ovl);
 #endif
-
-	// (Alexander Schulz, OpenX32, 11.08.2025) Workaround to get display enabled
-	imxfb_disable_controller(info);
-	imxfb_enable_controller(info);
-
 	return 0;
 }
 
