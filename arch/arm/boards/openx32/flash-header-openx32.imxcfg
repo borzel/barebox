@@ -52,16 +52,18 @@ wm 8 0x81000000 0xff
 # Configure EDSRAMC for normal mode in SDRAM control register (0xB8001xxx) -> Offset 0x000 -> ESDCTL0
 wm 32 0xB8001000 0x82216082
 
-# configure CPLD on CS5
-# ==============================
-# CS5_CSCRU in WEIM control register (0xB8002xxx) -> offset 0x050 -> CSCR5U (Chip Select 5 Upper Control Register)
-wm 32 0xB8002050 0x0000D843
-# CS5_CSCRL in WEIM control register (0xB8002xxx) -> offset 0x054 -> CSCR5L (Chip Select 5 Lower Control Register)
-wm 32 0xB8002054 0x22252521
-# CS5_CSCRA in WEIM control register (0xB8002xxx) -> offset 0x058 -> CSCR5A (Chip Select 5 Additional Control Register)
-wm 32 0xB8002058 0x22220A00
 
-# init_ccm - base freq  400, configuring post dividers
-# ==============================
-# ARM clk  399, AHB clk  133 in CCRM register (0x53F8xxxx) -> offset 0x0008 -> CCTL (CLock Control Register)
-wm 32 0x53F80008 0x20034000
+
+## configure CPLD on CS5
+## ==============================
+## CS5_CSCRU in WEIM control register (0xB8002xxx) -> offset 0x050 -> CSCR5U (Chip Select 5 Upper Control Register)
+#wm 32 0xB8002050 0x0000D843
+## CS5_CSCRL in WEIM control register (0xB8002xxx) -> offset 0x054 -> CSCR5L (Chip Select 5 Lower Control Register)
+#wm 32 0xB8002054 0x22252521
+## CS5_CSCRA in WEIM control register (0xB8002xxx) -> offset 0x058 -> CSCR5A (Chip Select 5 Additional Control Register)
+#wm 32 0xB8002058 0x22220A00###
+
+## init_ccm - base freq  400, configuring post dividers
+## ==============================
+## ARM clk  399, AHB clk  133 in CCRM register (0x53F8xxxx) -> offset 0x0008 -> CCTL (CLock Control Register)
+#wm 32 0x53F80008 0x20034000

@@ -57,8 +57,67 @@ static void mx25pdk_uart_init(void)
 	mxc_iomux_v3_setup_multiple_pads(uart_pads, ARRAY_SIZE(uart_pads));
 }
 
+// static int rdb_mem_init(void)
+// {
+// 	// if (!of_machine_is_compatible("fsl,ls1046a-rdb"))
+// 	// 	return 0;
+
+// 	arm_add_mem_device("ram0", 0x80000000, 0x4000000);
+
+// 	return 0;
+// }
+// mem_initcall(rdb_mem_init);
+
 static int openx32_init(void)
 {
+// # configure AIPS1 (base Address 0x43F0_xxxx)
+// # ==============================
+// # AIPS1_OPACR0_7
+// 0x43F00040 0x00000000 32
+writel(0x00000000, 0x43F00040);
+// # AIPS1_OPACR8_15
+// 0x43F00044 0x00000000 32
+writel(0x00000000, 0x43F00044);
+// # AIPS1_OPACR16_23
+// 0x43F00048 0x00000000 32
+writel(0x00000000, 0x43F00048);
+// # AIPS1_OPACR24_31
+// 0x43F0004C 0x00000000 32
+writel(0x00000000, 0x43F0004C);
+// # AIPS1_OPACR32_33
+// 0x43F00050 0x00000000 32
+writel(0x00000000, 0x43F00050);
+// # AIPS1_MPROT0_7
+// 0x43F00000 0x77777777 32
+writel(0x77777777, 0x43F00000);
+// # AIPS1_MPROT8_15
+// 0x43F00004 0x77777777 32
+writel(0x77777777, 0x43F00004);
+
+// # configure AIPS2  (base Address 0x53F0_xxxx) - keep for now, may need to modify based on MX25
+// # ==============================
+// # AIPS2_OPACR0_7
+// 0x53F00040 0x00000000 32
+writel(0x00000000, 0x53F00040);
+// # AIPS2_OPACR8_15
+// 0x53F00044 0x00000000 32
+writel(0x00000000, 0x53F00044);
+// # AIPS2_OPACR16_23
+// 0x53F00048 0x00000000 32
+writel(0x00000000, 0x53F00048);
+// # AIPS2_OPACR24_31
+// 0x53F0004C 0x00000000 32
+writel(0x00000000, 0x53F0004C);
+// # AIPS2_OPACR32_33
+// 0x53F00050 0x00000000 32
+writel(0x00000000, 0x53F00050);
+// # AIPS2_MPROT0_7
+// 0x53F00000 0x77777777 32
+writel(0x77777777, 0x53F00000);
+// # AIPS2_MPROT8_15
+// 0x53F00004 0x77777777 32
+writel(0x77777777, 0x53F00004);
+
 	// configure peripheral enables for CGCR0
 	// configure peripheral enables for CGCR1
 	// configure peripheral enables for CGCR2
@@ -88,28 +147,9 @@ static int openx32_init(void)
 	"str r1, [r0]"
 	);
 
-	// enable LAMP (asserted when high)
-	gpio_request(LAMP_PWM, "LAMP_PWM");
-	gpio_direction_output(LAMP_PWM, 1);
-	gpio_set_value(LAMP_PWM, 0);
-
-	// enable USB_POWER (asserted when high)
-	gpio_request(USB_POWER, "USB_POWER");
-	gpio_direction_output(USB_POWER, 1);
-	gpio_set_value(USB_POWER, 1);
-
-	// enable MCU_BUSY LED (asserted when high)
-	gpio_request(MCU_BUSY, "MCU_BUSY");
-	gpio_direction_output(MCU_BUSY, 1);
-	gpio_set_value(MCU_BUSY, 1);
-
-	// enable SURFACE_RESET pin (asserted when zero)
-	gpio_request(SURFACE_RESET, "SURFACE_RESET");
-	gpio_direction_output(SURFACE_RESET, 1);
-	gpio_set_value(SURFACE_RESET, 1);
-
 	barebox_set_hostname("openx32");
 	armlinux_set_architecture(MACH_TYPE_OPENX32);
+	armlinux_set_serial(imx_uid());
 
 	return 0;
 }
@@ -117,6 +157,58 @@ static int openx32_init(void)
 console_initcall(openx32_init);
 
 // ######################################################################
+
+/*
+ * FIXME: need to revisit this
+ * The original code enabled PUE and 100-k pull-down without PKE, so the right
+ * value here is likely:
+ *	0 for no pull
+ * or:
+ *	PAD_CTL_PUS_100K_DOWN for 100-k pull-down
+ */
+#define FEC_OUT_PAD_CTRL	0
+
+#define I2C_PAD_CTRL		(PAD_CTL_HYS | PAD_CTL_PUS_100K_UP | \
+				 PAD_CTL_ODE)
+
+static void mx25pdk_fec_init(void)
+{
+	static const iomux_v3_cfg_t fec_pads[] = {
+		MX25_PAD_FEC_TX_CLK__FEC_TX_CLK,
+		MX25_PAD_FEC_RX_DV__FEC_RX_DV,
+		MX25_PAD_FEC_RDATA0__FEC_RDATA0,
+		NEW_PAD_CTRL(MX25_PAD_FEC_TDATA0__FEC_TDATA0, FEC_OUT_PAD_CTRL),
+		NEW_PAD_CTRL(MX25_PAD_FEC_TX_EN__FEC_TX_EN, FEC_OUT_PAD_CTRL),
+		NEW_PAD_CTRL(MX25_PAD_FEC_MDC__FEC_MDC, FEC_OUT_PAD_CTRL),
+		MX25_PAD_FEC_MDIO__FEC_MDIO,
+		MX25_PAD_FEC_RDATA1__FEC_RDATA1,
+		NEW_PAD_CTRL(MX25_PAD_FEC_TDATA1__FEC_TDATA1, FEC_OUT_PAD_CTRL),
+
+		NEW_PAD_CTRL(MX25_PAD_GPIO_B__GPIO_B, 0), /* FEC_RESET_B */
+	};
+
+	static const iomux_v3_cfg_t i2c_pads[] = {
+		NEW_PAD_CTRL(MX25_PAD_I2C1_CLK__I2C1_CLK, I2C_PAD_CTRL),
+		NEW_PAD_CTRL(MX25_PAD_I2C1_DAT__I2C1_DAT, I2C_PAD_CTRL),
+	};
+
+	mxc_iomux_v3_setup_multiple_pads(fec_pads, ARRAY_SIZE(fec_pads));
+
+	/* configure FEC_RESET as output */
+	gpio_request(FEC_RESET_B, "FEC_RESET");
+	gpio_direction_output(FEC_RESET_B, 1);
+
+	/* Assert RESET */
+	gpio_set_value(FEC_RESET_B, 0);
+
+	udelay(10);
+
+	/* Deassert RESET */
+	gpio_set_value(FEC_RESET_B, 1);
+
+	/* Setup I2C pins */
+	mxc_iomux_v3_setup_multiple_pads(i2c_pads, ARRAY_SIZE(i2c_pads));
+}
 
 static iomux_v3_cfg_t openx32_lcdc_gpios[] = {
 	MX25_PAD_LSCLK__LSCLK,
@@ -186,6 +278,30 @@ static int openx32_init_fb(void)
 		return 0;
 	}
 
+	//writel(0xFC228082, 0x53FBC018);
+
+	// enable LAMP (asserted when high)
+	gpio_request(LAMP_PWM, "LAMP_PWM");
+	gpio_direction_output(LAMP_PWM, 1);
+	gpio_set_value(LAMP_PWM, 0);
+
+	// enable USB_POWER (asserted when high)
+	gpio_request(USB_POWER, "USB_POWER");
+	gpio_direction_output(USB_POWER, 1);
+	gpio_set_value(USB_POWER, 1);
+
+	// enable MCU_BUSY LED (asserted when high)
+	gpio_request(MCU_BUSY, "MCU_BUSY");
+	gpio_direction_output(MCU_BUSY, 1);
+	gpio_set_value(MCU_BUSY, 1);
+
+	// enable SURFACE_RESET pin (asserted when zero)
+	gpio_request(SURFACE_RESET, "SURFACE_RESET");
+	gpio_direction_output(SURFACE_RESET, 1);
+	gpio_set_value(SURFACE_RESET, 1);
+
+	mx25pdk_fec_init();
+
 	// set GPIOs within IOMUXC
 	static const iomux_v3_cfg_t gpio_pads[] = {
 		NEW_PAD_CTRL(MX25_PAD_CONTRAST__PWM4_PWMO, 0),
@@ -198,7 +314,7 @@ static int openx32_init_fb(void)
 	writel(0x000000C8, 0x53FC800C);
 
 	mxc_iomux_v3_setup_multiple_pads(openx32_lcdc_gpios,
-	 		ARRAY_SIZE(openx32_lcdc_gpios));
+	  		ARRAY_SIZE(openx32_lcdc_gpios));
 
 	openx32_fb_enable(0);
 	add_generic_device("imxfb",	-1,	NULL, (resource_size_t)MX25_LCDC_BASE_ADDR, 0x1000, IORESOURCE_MEM, &openx32_fb_data);

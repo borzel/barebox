@@ -1,0 +1,19 @@
+#!/bin/sh
+
+fb0.enable=0
+fbconsole0.active=0
+
+# feed Watchdog
+wdog0.autoping=1
+
+mkdir -p /sd
+mount /dev/mmc0.0 /sd
+
+# Show Logo
+splash -b 0x00000000 /sd/OpenX32_600.png
+
+# enable framebuffer
+fb0.enable=1
+
+# wait for signals to become stable
+msleep 100
