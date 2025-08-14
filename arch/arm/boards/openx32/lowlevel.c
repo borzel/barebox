@@ -11,6 +11,8 @@ ENTRY_FUNCTION_WITHSTACK(start_imx25_openx32, MX25_IRAM_BASE_ADDR + MX25_IRAM_SI
 	extern char __dtb_imx25_openx32_start[];
     void *fdt;
 
+   	arm_cpu_lowlevel_init();
+
     relocate_to_current_adr();
     setup_c();
 
