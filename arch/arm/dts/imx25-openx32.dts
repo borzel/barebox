@@ -10,7 +10,7 @@
 
 / {
 	model = "Behringer X32 - OpenX32";
-	compatible = "fsl,imx25-pdk", "fsl,imx25";
+	compatible = "fsl,imx25-openx32", "fsl,imx25";
 
 	memory@80000000 {
 		device_type = "memory";
