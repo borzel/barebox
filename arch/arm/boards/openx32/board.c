@@ -1,13 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // SPDX-FileCopyrightText: 2011 Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix
-
-#define pr_fmt(fmt) "openx32: " fmt
-
-#define LAMP_PWM		IMX_GPIO_NR(1, 26)
-#define FEC_RESET_B		IMX_GPIO_NR(1, 1)
-#define USB_POWER		IMX_GPIO_NR(4, 11)
-#define MCU_BUSY		IMX_GPIO_NR(4, 24)
-#define SURFACE_RESET	IMX_GPIO_NR(4, 28)
+// SPDX-FileCopyrightText: 2025 Alexander Schulz <code@schulzalex.de>, OpenX32 Project
 
 #include <common.h>
 #include <init.h>
@@ -29,45 +22,6 @@
 #include <mach/imx/bbu.h>
 #include <asm/mmu.h>
 
-
-
-
-
-/*
- * Set up input pins with hysteresis and 100-k pull-ups
- */
-#define UART5_IN_PAD_CTRL       (PAD_CTL_HYS | PAD_CTL_PUS_100K_UP)
-/*
- * FIXME: need to revisit this
- * The original code enabled PUE and 100-k pull-down without PKE, so the right
- * value here is likely:
- *	0 for no pull
- * or:
- *	PAD_CTL_PUS_100K_DOWN for 100-k pull-down
- */
-#define UART5_OUT_PAD_CTRL      0
-
-static void mx25pdk_uart_init(void)
-{
-	static const iomux_v3_cfg_t uart_pads[] = {
-		NEW_PAD_CTRL(MX25_PAD_LBA__UART5_RXD_MUX, UART5_IN_PAD_CTRL),
-		NEW_PAD_CTRL(MX25_PAD_ECB__UART5_TXD_MUX, UART5_OUT_PAD_CTRL),
-	};
-
-	mxc_iomux_v3_setup_multiple_pads(uart_pads, ARRAY_SIZE(uart_pads));
-}
-
-// static int rdb_mem_init(void)
-// {
-// 	// if (!of_machine_is_compatible("fsl,ls1046a-rdb"))
-// 	// 	return 0;
-
-// 	arm_add_mem_device("ram0", 0x80000000, 0x4000000);
-
-// 	return 0;
-// }
-// mem_initcall(rdb_mem_init);
-
 static int openx32_init(void)
 {
 	barebox_set_hostname("openx32");
@@ -80,58 +34,6 @@ static int openx32_init(void)
 console_initcall(openx32_init);
 
 // ######################################################################
-
-/*
- * FIXME: need to revisit this
- * The original code enabled PUE and 100-k pull-down without PKE, so the right
- * value here is likely:
- *	0 for no pull
- * or:
- *	PAD_CTL_PUS_100K_DOWN for 100-k pull-down
- */
-#define FEC_OUT_PAD_CTRL	0
-
-#define I2C_PAD_CTRL		(PAD_CTL_HYS | PAD_CTL_PUS_100K_UP | \
-				 PAD_CTL_ODE)
-
-static void mx25pdk_fec_init(void)
-{
-	static const iomux_v3_cfg_t fec_pads[] = {
-		MX25_PAD_FEC_TX_CLK__FEC_TX_CLK,
-		MX25_PAD_FEC_RX_DV__FEC_RX_DV,
-		MX25_PAD_FEC_RDATA0__FEC_RDATA0,
-		NEW_PAD_CTRL(MX25_PAD_FEC_TDATA0__FEC_TDATA0, FEC_OUT_PAD_CTRL),
-		NEW_PAD_CTRL(MX25_PAD_FEC_TX_EN__FEC_TX_EN, FEC_OUT_PAD_CTRL),
-		NEW_PAD_CTRL(MX25_PAD_FEC_MDC__FEC_MDC, FEC_OUT_PAD_CTRL),
-		MX25_PAD_FEC_MDIO__FEC_MDIO,
-		MX25_PAD_FEC_RDATA1__FEC_RDATA1,
-		NEW_PAD_CTRL(MX25_PAD_FEC_TDATA1__FEC_TDATA1, FEC_OUT_PAD_CTRL),
-
-		NEW_PAD_CTRL(MX25_PAD_GPIO_B__GPIO_B, 0), /* FEC_RESET_B */
-	};
-
-	static const iomux_v3_cfg_t i2c_pads[] = {
-		NEW_PAD_CTRL(MX25_PAD_I2C1_CLK__I2C1_CLK, I2C_PAD_CTRL),
-		NEW_PAD_CTRL(MX25_PAD_I2C1_DAT__I2C1_DAT, I2C_PAD_CTRL),
-	};
-
-	mxc_iomux_v3_setup_multiple_pads(fec_pads, ARRAY_SIZE(fec_pads));
-
-	/* configure FEC_RESET as output */
-	gpio_request(FEC_RESET_B, "FEC_RESET");
-	gpio_direction_output(FEC_RESET_B, 1);
-
-	/* Assert RESET */
-	gpio_set_value(FEC_RESET_B, 0);
-
-	udelay(10);
-
-	/* Deassert RESET */
-	gpio_set_value(FEC_RESET_B, 1);
-
-	/* Setup I2C pins */
-	mxc_iomux_v3_setup_multiple_pads(i2c_pads, ARRAY_SIZE(i2c_pads));
-}
 
 static iomux_v3_cfg_t openx32_lcdc_gpios[] = {
 	MX25_PAD_LSCLK__LSCLK,
@@ -201,37 +103,13 @@ static int openx32_init_fb(void)
 		return 0;
 	}
 
-	//writel(0xFC228082, 0x53FBC018);
-
-	// enable LAMP (asserted when high)
-	gpio_request(LAMP_PWM, "LAMP_PWM");
-	gpio_direction_output(LAMP_PWM, 1);
-	gpio_set_value(LAMP_PWM, 0);
-
-	// USB OTG Mode
-	//Offset 0x01A8 (USBMODE)
-	//writel(0x3, );
-
-	// enable USB_POWER (asserted when high)
-	gpio_request(USB_POWER, "USB_POWER");
-	gpio_direction_output(USB_POWER, 1);
-	gpio_set_value(USB_POWER, 1);
-
-	// enable MCU_BUSY LED (asserted when high)
-	gpio_request(MCU_BUSY, "MCU_BUSY");
-	gpio_direction_output(MCU_BUSY, 1);
-	gpio_set_value(MCU_BUSY, 1);
-
-	// enable SURFACE_RESET pin (asserted when zero)
-	gpio_request(SURFACE_RESET, "SURFACE_RESET");
-	gpio_direction_output(SURFACE_RESET, 1);
-	gpio_set_value(SURFACE_RESET, 1);
-
-	mx25pdk_fec_init();
-
-	// set GPIOs within IOMUXC
+    // set GPIOs within IOMUXC
 	static const iomux_v3_cfg_t gpio_pads[] = {
 		NEW_PAD_CTRL(MX25_PAD_CONTRAST__PWM4_PWMO, 0),
+		NEW_PAD_CTRL(MX25_PAD_PWM__GPIO_1_26, 0),
+		NEW_PAD_CTRL(MX25_PAD_D9__GPIO_4_11, 0),
+		NEW_PAD_CTRL(MX25_PAD_UART1_RTS__GPIO_4_24, 0),
+		NEW_PAD_CTRL(MX25_PAD_UART2_RTS__GPIO_4_28, 0),
 	};
 	mxc_iomux_v3_setup_multiple_pads(gpio_pads, ARRAY_SIZE(gpio_pads));
 
@@ -249,5 +127,3 @@ static int openx32_init_fb(void)
 	return 0;
 }
 device_initcall(openx32_init_fb);
-
-

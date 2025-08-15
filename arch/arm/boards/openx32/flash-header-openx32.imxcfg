@@ -4,7 +4,7 @@
 # a imx-image to use with imx-usb-loader
 #
 soc imx25
-loadaddr 0x80000000
+loadaddr 0x82000000
 
 # start of DCD
 ivtofs 0x400

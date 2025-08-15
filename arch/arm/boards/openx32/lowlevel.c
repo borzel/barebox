@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // SPDX-FileCopyrightText: 2011 Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix
+// SPDX-FileCopyrightText: 2025 Alexander Schulz <code@schulzalex.de>, OpenX32 Project
 
 #include <common.h>
 #include <init.h>
@@ -37,11 +38,11 @@ ENTRY_FUNCTION_WITHSTACK(start_imx25_openx32, MX25_IRAM_BASE_ADDR + MX25_IRAM_SI
 	
 	// Disable ESDCTL1 - not connected SDRAM controller
 	writel(0x0, 0xB8001008);
- 
-    setup_uart();
+
+	setup_uart();
 
     relocate_to_current_adr();
     setup_c();
 
-	barebox_arm_entry(0x80000000, SZ_16M, __dtb_imx25_openx32_start);
+	barebox_arm_entry(0x82000000, SZ_32M, __dtb_imx25_openx32_start);
 }
