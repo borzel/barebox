@@ -10,7 +10,7 @@ mkdir -p /sd
 mount /dev/mmc0.0 /sd
 
 # Show Logo
-splash -b 0x00000000 /sd/OpenX32_600.png
+splash -b 0x00FFFFFF /sd/OpenX32_600.png
 
 # enable framebuffer
 fb0.enable=1
