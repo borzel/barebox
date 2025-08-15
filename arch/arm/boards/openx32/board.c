@@ -70,83 +70,6 @@ static void mx25pdk_uart_init(void)
 
 static int openx32_init(void)
 {
-// # configure AIPS1 (base Address 0x43F0_xxxx)
-// # ==============================
-// # AIPS1_OPACR0_7
-// 0x43F00040 0x00000000 32
-writel(0x00000000, 0x43F00040);
-// # AIPS1_OPACR8_15
-// 0x43F00044 0x00000000 32
-writel(0x00000000, 0x43F00044);
-// # AIPS1_OPACR16_23
-// 0x43F00048 0x00000000 32
-writel(0x00000000, 0x43F00048);
-// # AIPS1_OPACR24_31
-// 0x43F0004C 0x00000000 32
-writel(0x00000000, 0x43F0004C);
-// # AIPS1_OPACR32_33
-// 0x43F00050 0x00000000 32
-writel(0x00000000, 0x43F00050);
-// # AIPS1_MPROT0_7
-// 0x43F00000 0x77777777 32
-writel(0x77777777, 0x43F00000);
-// # AIPS1_MPROT8_15
-// 0x43F00004 0x77777777 32
-writel(0x77777777, 0x43F00004);
-
-// # configure AIPS2  (base Address 0x53F0_xxxx) - keep for now, may need to modify based on MX25
-// # ==============================
-// # AIPS2_OPACR0_7
-// 0x53F00040 0x00000000 32
-writel(0x00000000, 0x53F00040);
-// # AIPS2_OPACR8_15
-// 0x53F00044 0x00000000 32
-writel(0x00000000, 0x53F00044);
-// # AIPS2_OPACR16_23
-// 0x53F00048 0x00000000 32
-writel(0x00000000, 0x53F00048);
-// # AIPS2_OPACR24_31
-// 0x53F0004C 0x00000000 32
-writel(0x00000000, 0x53F0004C);
-// # AIPS2_OPACR32_33
-// 0x53F00050 0x00000000 32
-writel(0x00000000, 0x53F00050);
-// # AIPS2_MPROT0_7
-// 0x53F00000 0x77777777 32
-writel(0x77777777, 0x53F00000);
-// # AIPS2_MPROT8_15
-// 0x53F00004 0x77777777 32
-writel(0x77777777, 0x53F00004);
-
-	// configure peripheral enables for CGCR0
-	// configure peripheral enables for CGCR1
-	// configure peripheral enables for CGCR2
-	// Set Peripheral Clock Divider Registers (CCM_PDR0...CCM_PDR3)
-	asm volatile(
-	"ldr r0, =0x53F8000C \n\t"
-	"ldr r1, =0x1FFFFFFF \n\t"
-	"str r1, [r0] \n\t"
-	"ldr r0, =0x53F80010 \n\t"
-	"ldr r1, =0xFFFFFFFF \n\t"
-	"str r1, [r0] \n\t"
-	"ldr r0, =0x53F80014 \n\t"
-	"ldr r1, =0x000FDFFF \n\t"
-	"str r1, [r0] \n\t"
-
-	"ldr r0, =0x53F80018 \n\t"
-	"ldr r1, =0x23C83403 \n\t"
-	"str r1, [r0] \n\t"
-	"ldr r0, =0x53F8001C \n\t"
-	"ldr r1, =0x03030303 \n\t"
-	"str r1, [r0] \n\t"
-	"ldr r0, =0x53F80020 \n\t"
-	"ldr r1, =0x01010103 \n\t"
-	"str r1, [r0] \n\t"
-	"ldr r0, =0x53F80024 \n\t"
-	"ldr r1, =0x01010101 \n\t"
-	"str r1, [r0]"
-	);
-
 	barebox_set_hostname("openx32");
 	armlinux_set_architecture(MACH_TYPE_OPENX32);
 	armlinux_set_serial(imx_uid());
@@ -284,6 +207,10 @@ static int openx32_init_fb(void)
 	gpio_request(LAMP_PWM, "LAMP_PWM");
 	gpio_direction_output(LAMP_PWM, 1);
 	gpio_set_value(LAMP_PWM, 0);
+
+	// USB OTG Mode
+	//Offset 0x01A8 (USBMODE)
+	//writel(0x3, );
 
 	// enable USB_POWER (asserted when high)
 	gpio_request(USB_POWER, "USB_POWER");

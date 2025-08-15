@@ -14,7 +14,7 @@
 
 	memory@80000000 {
 		device_type = "memory";
-		reg = <0x80000000 0x4000000>;
+		reg = <0x80000000 0x04000000>;
 	};
 
 	sound {
@@ -495,5 +495,6 @@
 
 &usbotg {
 	external-vbus-divider;
+	
 	status = "okay";
 };
