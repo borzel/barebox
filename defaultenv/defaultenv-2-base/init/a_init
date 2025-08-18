@@ -7,7 +7,7 @@ fbconsole0.active=0
 wdog0.autoping=1
 
 mkdir -p /sd
-mount /dev/mmc0.0 /sd
+mount /dev/mmc0.1 /sd
 
 # Show Logo
 splash -b 0x00FFFFFF /sd/OpenX32_600.png
@@ -17,3 +17,5 @@ fb0.enable=1
 
 # wait for signals to become stable
 msleep 100
+
+boot mmc

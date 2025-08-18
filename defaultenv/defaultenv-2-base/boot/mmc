@@ -1,21 +1,6 @@
 #!/bin/sh
 
-# script to boot from mmc
-
-
-
 global.bootm.image=/sd/zImage
-global.bootm.oftree=/sd/imx25-pdk.dtb
-#global.bootm.oftree=/sd/imx25-openx32.dtb
-global.bootm.initrd=/sd/uramdisk.bin
-#global linux.bootargs.base="console=ttymxc4,115200 console=tty0 root=/dev/ram0 rw init=/init initrd=0x82904000 video=imxfb:800x480"
-global linux.bootargs.base="console=ttymxc4,115200 console=tty0 root=/dev/ram0 rw video=imxfb:800x480"
-#global.linux.bootargs.dyn.root="root=/dev/mmcblk0p3 rootfstype=ext4 rw rootwait"
-
-
-#global.bootm.image=/mnt/sd-boot/linuximage
-#global.bootm.oftree=/mnt/sd-boot/imx23-olinuxino.dtb
-##global.bootm.initrd=<path to initrd>
-#global.linux.bootargs.dyn.root="root=/dev/mmcblk0p3 rootfstype=ext4 rw rootwait"
-
-
+global.bootm.oftree=/sd/imx25-openx32.dtb
+#global.bootm.initrd=/sd/uramdisk.bin
+global linux.bootargs.base="console=ttymxc4,115200 console=tty0 root=/dev/mmcblk0p3 rw video=imxfb:800x480"
